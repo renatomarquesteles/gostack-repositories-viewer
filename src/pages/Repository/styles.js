@@ -131,3 +131,28 @@ export const FilterButton = styled.button`
   border-bottom: ${props =>
     props.active ? '2px solid #7159c1' : '2px solid rgba(0, 0, 0 ,0)'};
 `;
+
+export const Pagination = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 15px;
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0 15px;
+    margin: 0 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 40px;
+
+    &[disabled] {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+`;
