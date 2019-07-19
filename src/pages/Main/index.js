@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import api from '../../services/api';
 import Container from '../../components/Container';
-import { Form, List, SubmitButton } from './styles';
+import { Form, List, SearchInput, SubmitButton } from './styles';
 
 export default class Main extends Component {
   state = {
@@ -12,6 +12,7 @@ export default class Main extends Component {
     repositories: [],
     loading: false,
     error: false,
+    errorMsg: '',
   };
 
   componentDidMount() {
@@ -38,13 +39,16 @@ export default class Main extends Component {
     try {
       e.preventDefault();
 
-      this.setState({ loading: true, error: false });
+      this.setState({ loading: true, error: false, errorMsg: '' });
 
       const { newRepo, repositories } = this.state;
 
       const hasRepo = repositories.find(r => r.name === newRepo);
 
-      if (hasRepo) throw new Error('Repositório duplicado');
+      if (hasRepo) {
+        await this.setState({ errorMsg: 'Repositório duplicado' });
+        throw new Error('Repositório duplicado');
+      }
 
       const response = await api.get(`/repos/${newRepo}`);
 
@@ -57,6 +61,12 @@ export default class Main extends Component {
         newRepo: '',
       });
     } catch (error) {
+      const { errorMsg } = this.state;
+
+      if (!errorMsg) {
+        this.setState({ errorMsg: 'Repositório não encontrado' });
+      }
+
       this.setState({ error: true });
     } finally {
       this.setState({ loading: false });
@@ -64,7 +74,7 @@ export default class Main extends Component {
   };
 
   render() {
-    const { newRepo, repositories, loading, error } = this.state;
+    const { newRepo, repositories, loading, error, errorMsg } = this.state;
 
     return (
       <Container>
@@ -73,13 +83,16 @@ export default class Main extends Component {
           Repositórios
         </h1>
 
-        <Form onSubmit={this.handleSubmit} error={error}>
-          <input
-            type="text"
-            placeholder="Adicionar repositório"
-            value={newRepo}
-            onChange={this.handleInputChange}
-          />
+        <Form onSubmit={this.handleSubmit}>
+          <SearchInput error={error}>
+            <input
+              type="text"
+              placeholder="Adicionar repositório"
+              value={newRepo}
+              onChange={this.handleInputChange}
+            />
+            {error && <span>{errorMsg}</span>}
+          </SearchInput>
           <SubmitButton loading={loading ? 1 : 0}>
             {loading ? (
               <FaSpinner color="#fff" size={14} />

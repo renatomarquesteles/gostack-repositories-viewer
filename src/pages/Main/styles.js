@@ -4,6 +4,12 @@ export const Form = styled.form`
   margin-top: 30px;
   display: flex;
   flex-direction: row;
+`;
+
+export const SearchInput = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   input {
     flex: 1;
@@ -11,6 +17,12 @@ export const Form = styled.form`
     padding: 10px 15px;
     border-radius: 4px;
     font-size: 16px;
+  }
+
+  span {
+    padding: 3px 0 0 4px;
+    font-size: 12px;
+    color: #ff6b6b;
   }
 `;
 
@@ -36,6 +48,7 @@ export const SubmitButton = styled.button.attrs(props => ({
   display: flex;
   justify-content: center;
   align-items: center;
+  max-height: 40px;
 
   &[disabled] {
     cursor: not-allowed;
