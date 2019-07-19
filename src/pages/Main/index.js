@@ -80,7 +80,7 @@ export default class Main extends Component {
             value={newRepo}
             onChange={this.handleInputChange}
           />
-          <SubmitButton loading={loading}>
+          <SubmitButton loading={loading ? 1 : 0}>
             {loading ? (
               <FaSpinner color="#fff" size={14} />
             ) : (
@@ -92,7 +92,9 @@ export default class Main extends Component {
         <List>
           {repositories.map(repository => (
             <li key={repository.name}>
-              <span>{repository.name}</span>
+              <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
+                <span>{repository.name}</span>
+              </Link>
               <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
                 Detalhes
               </Link>

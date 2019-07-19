@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { MdArrowBack } from 'react-icons/md';
 
 import api from '../../services/api';
-
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import { Filter, FilterButton, Loading, Owner, IssueList } from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -19,19 +19,21 @@ export default class Repository extends Component {
   state = {
     repository: {},
     issues: [],
+    issuesFilter: 'open',
     loading: true,
   };
 
   async componentDidMount() {
     const { match } = this.props;
 
-    const repoName = decodeURIComponent(match.params.repository);
+    const { issuesFilter } = this.state;
 
+    const repoName = decodeURIComponent(match.params.repository);
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: `${issuesFilter}`,
           per_page: 5,
         },
       }),
@@ -44,8 +46,31 @@ export default class Repository extends Component {
     });
   }
 
+  async filterIssues(state) {
+    const { issuesFilter } = this.state;
+
+    if (issuesFilter === state) {
+      return;
+    }
+
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: `${state}`,
+        per_page: 5,
+      },
+    });
+    this.setState({ issues: [] });
+    this.setState({
+      issues: issues.data,
+      issuesFilter: state,
+    });
+  }
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, issuesFilter, loading } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -53,14 +78,38 @@ export default class Repository extends Component {
 
     return (
       <Container>
+        <Link to="/">
+          <MdArrowBack size="30" color="#222" />
+        </Link>
         <Owner>
-          <Link to="/">Voltar aos repositórios</Link>
           <img src={repository.owner.avatar_url} alt={repository.owner.login} />
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-
         <IssueList>
+          <Filter filter={issuesFilter}>
+            <FilterButton
+              type="button"
+              active={issuesFilter === 'all'}
+              onClick={() => this.filterIssues('all')}
+            >
+              TODAS
+            </FilterButton>
+            <FilterButton
+              type="button"
+              active={issuesFilter === 'open'}
+              onClick={() => this.filterIssues('open')}
+            >
+              ABERTAS
+            </FilterButton>
+            <FilterButton
+              type="button"
+              active={issuesFilter === 'closed'}
+              onClick={() => this.filterIssues('closed')}
+            >
+              FECHADAS
+            </FilterButton>
+          </Filter>
           {issues.map(issue => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />

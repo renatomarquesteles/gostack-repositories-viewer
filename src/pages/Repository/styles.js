@@ -1,4 +1,15 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const slideUp = keyframes`
+  0% {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+`;
 
 export const Loading = styled.div`
   color: #fff;
@@ -14,12 +25,7 @@ export const Owner = styled.header`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  a {
-    color: #7159c1;
-    font-size: 16px;
-    text-decoration: none;
-  }
+  animation: ${slideUp} 0.4s ease;
 
   img {
     width: 120px;
@@ -53,6 +59,7 @@ export const IssueList = styled.ul`
     padding: 15px 10px;
     border: 1px solid #eee;
     border-radius: 4px;
+    animation: ${slideUp} 0.4s ease;
 
     & + li {
       margin-top: 10px;
@@ -100,4 +107,27 @@ export const IssueList = styled.ul`
       }
     }
   }
+`;
+
+export const Filter = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 20px;
+  animation: ${slideUp} 0.4s ease;
+`;
+
+export const FilterButton = styled.button`
+  flex: 1;
+  outline: 0;
+  border: 0;
+  background: none;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: ${props => (props.active ? 'bold' : 'normal')};
+  color: ${props => (props.active ? '#7159c1' : '#666')};
+  margin: 0 5px;
+  transition: border ease-in 0.2s;
+  border-bottom: ${props =>
+    props.active ? '2px solid #7159c1' : '2px solid rgba(0, 0, 0 ,0)'};
 `;
